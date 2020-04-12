@@ -1,16 +1,41 @@
+import java.awt.*;
 import java.net.*;
 import java.nio.file.Files;
 import java.io.*;
 import java.util.*;
+import java.util.List;
 
 public class SimpleClient {
 
-	String serverAddress;
-	int portNo;
-	Socket socket = null;
+	private PrintWriter printWriter;
+	private Socket socket = null;
 
 	public SimpleClient(String serverAddress, int portNo) {
-		// Your code goes here.
+		// Your code goes here
+		try{
+			socket = new Socket(serverAddress,portNo);
+			printWriter = new PrintWriter(socket.getOutputStream(), true);
+		}
+		catch (IOException i){
+			System.out.println("Error connecting to the Sever ");
+			System.out.println(i);
+		}
+	}
+
+	public void sendMessage(List<String> lines) {
+		for(String s: lines){
+			printWriter.println(s);
+		}
+	}
+
+	public void close(){
+		try {
+			printWriter.close();
+			socket.close();
+		}
+		catch (IOException i){
+			System.out.println(i);
+		}
 	}
 
 	public static void main(String[] args) throws IOException {
@@ -30,7 +55,8 @@ public class SimpleClient {
 		} else {
 			serverIPAddr = "127.0.0.1";
 			portNo = 10000;
-			inputFile = new File(dir.getCanonicalPath() + File.separator + "Files/testInput");
+			inputFile = new File(dir.getCanonicalPath() + File.separator + "Files/testInput.txt");
+
 		}
 
 		/* Read the data from File into an ArrayList */
@@ -51,5 +77,7 @@ public class SimpleClient {
 		 * file. The syntax is writeOutput(String line)
 		 */
 
+		client.sendMessage(lines);
+		client.close();
 	}
 }

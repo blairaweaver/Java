@@ -3,6 +3,7 @@ import java.io.*;
 
 public class SimpleServer {
 
+	private BufferedReader bufferedReader;
 	private ServerSocket listenSocket = null;
 	private Socket connectSocket = null;
 
@@ -12,6 +13,36 @@ public class SimpleServer {
 
 	public SimpleServer(int portNo) {
 		// add your code
+		try{
+			listenSocket = new ServerSocket(portNo);
+			connectSocket = listenSocket.accept();
+			bufferedReader = new BufferedReader(new InputStreamReader(connectSocket.getInputStream()));
+		}
+		catch(Exception e){
+			System.out.println(e);
+		}
+
+	}
+
+	public void readMessage(OutputWriter out) {
+		String str;
+		try {
+			while ((str = bufferedReader.readLine()) != null){
+				out.writeOutput(str);
+			}
+		}
+		catch (IOException i){
+			System.out.println(i);
+		}
+	}
+	public void close(){
+		try {
+			bufferedReader.close();
+			connectSocket.close();
+		}
+		catch (IOException i){
+			System.out.println(i);
+		}
 	}
 
 	public static void main(String[] args) throws IOException {
@@ -44,5 +75,9 @@ public class SimpleServer {
 		 * NOTE: You must use out.writeoutput method to write to the output
 		 * file. The syntax is writeOutput(String line)
 		 */
+
+		testServer.readMessage(out);
+
+		testServer.close();
 	}
 }
